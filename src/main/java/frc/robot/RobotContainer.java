@@ -9,13 +9,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.OperatorConstants.*;
+import static frc.robot.Constants.FieldPositions.*;
 import frc.robot.commands.Drive;
+import frc.robot.commands.DriveToPosition;
 import frc.robot.commands.Eject;
 import frc.robot.commands.ExampleAuto;
 import frc.robot.commands.Intake;
 import frc.robot.commands.LaunchSequence;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.subsystems.CANFuelSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.VisionYALLSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -28,6 +32,15 @@ public class RobotContainer {
   // The robot's subsystems
   private final CANDriveSubsystem driveSubsystem = new CANDriveSubsystem();
   private final CANFuelSubsystem fuelSubsystem = new CANFuelSubsystem();
+
+  // --- Two vision subsystems for teaching ---
+  // VisionSubsystem: reads Limelight data using RAW NetworkTables (educational)
+  // VisionYALLSubsystem: reads the SAME data using the YALL helper library (cleaner)
+  // Both run simultaneously — compare their SmartDashboard values side-by-side!
+  //   Raw NT version publishes under "Vision/*"
+  //   YALL version publishes under "VisionYALL/*"
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+  private final VisionYALLSubsystem visionYALLSubsystem = new VisionYALLSubsystem();
 
   // The driver's controller
   private final CommandXboxController driverController = new CommandXboxController(
@@ -73,6 +86,17 @@ public class RobotContainer {
     // While the A button is held on the operator controller, eject fuel back out
     // the intake
     operatorController.a().whileTrue(new Eject(fuelSubsystem));
+
+    // --- Vision-assisted driving ---
+    // Press Y on the driver controller to drive to the scoring position.
+    // The robot will use the Limelight's AprilTag pose to navigate there.
+    // Release Y (or press another drive input) to cancel and go back to manual.
+    driverController.y().whileTrue(
+        new DriveToPosition(driveSubsystem, visionSubsystem, SCORE_POSITION));
+
+    // Press B on the driver controller to drive to the pickup position.
+    driverController.b().whileTrue(
+        new DriveToPosition(driveSubsystem, visionSubsystem, PICKUP_POSITION));
 
     // Set the default command for the drive subsystem to the command provided by
     // factory with the values provided by the joystick axes on the driver

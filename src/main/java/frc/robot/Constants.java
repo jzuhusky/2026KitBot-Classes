@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants. This class should not be used for any other
@@ -57,5 +60,45 @@ public final class Constants {
     // help avoid turning too fast and beign difficult to control
     public static final double DRIVE_SCALING = .7;
     public static final double ROTATION_SCALING = .8;
+  }
+
+  public static final class VisionConstants {
+    // Proportional gain for turning toward the target.
+    // Higher = turns faster, but too high will overshoot and oscillate.
+    // Start low and increase until the robot turns smoothly to the target.
+    public static final double TURN_P_GAIN = 0.02;
+
+    // Proportional gain for driving toward the target.
+    // Higher = drives faster, but too high will overshoot the position.
+    public static final double DRIVE_P_GAIN = 0.5;
+
+    // Maximum speeds (0 to 1) to prevent the robot from going too fast
+    // during vision-assisted driving
+    public static final double MAX_TURN_SPEED = 0.4;
+    public static final double MAX_DRIVE_SPEED = 0.5;
+
+    // How close is "close enough" to the target position
+    public static final double POSITION_TOLERANCE_METERS = 0.1; // ~4 inches
+    public static final double ANGLE_TOLERANCE_DEGREES = 5.0;   // within 5 degrees
+  }
+
+  /**
+   * Example field positions for the 2026 game.
+   * These are placeholder coordinates — you'll update them with real field
+   * measurements once you know your game and field layout.
+   *
+   * The FRC field is approximately 16.54m x 8.02m.
+   * Origin (0,0) is at the bottom-left corner when viewed from the blue alliance
+   * driver station.
+   */
+  public static final class FieldPositions {
+    // Example: a scoring position in front of a game element
+    public static final Pose2d SCORE_POSITION = new Pose2d(2.0, 5.5, Rotation2d.fromDegrees(0));
+
+    // Example: a pickup/intake position
+    public static final Pose2d PICKUP_POSITION = new Pose2d(14.0, 4.0, Rotation2d.fromDegrees(180));
+
+    // Example: a centered starting position
+    public static final Pose2d START_POSITION = new Pose2d(1.5, 4.0, Rotation2d.fromDegrees(0));
   }
 }
